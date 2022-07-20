@@ -14,7 +14,7 @@
 #define PRESSED     0
 #define BUTTON      p30  // A2
 
-static mbed::DigitalIn button(BUTTON);
+//static mbed::DigitalIn button(BUTTON);
 
 int bytes_per_frame;
 int bytes_per_pixel;
@@ -52,14 +52,14 @@ inline void ycbcr422_to_rgb888(int32_t Y, int32_t Cb, int32_t Cr, uint8_t* out) 
 }
 
 // LEDs
-#define LED_LEFT  p23  // 7
-#define LED_RIGHT p3   // A7
+#define LED_LEFT  7  // 7
+#define LED_RIGHT A7   // A7
 
 void setup() {
   Serial.begin(115600);
-  while (!Serial);
+  //while (!Serial);
 
-
+/*
   //if (!Camera.begin(QVGA, RGB565, 1)) {
   if (!Camera.begin(QQVGA, YUV422, 1)) {
     Serial.println("Failed to initialize camera!");
@@ -72,7 +72,7 @@ void setup() {
 
   bytes_per_pixel = Camera.bytesPerPixel();
   bytes_per_frame = Camera.width() * Camera.height() * bytes_per_pixel;
-
+*/
   //Camera.testPattern();  // The Camera module will always return a 
                          // fixed test pattern image with color bands 
 
@@ -92,16 +92,24 @@ void loop() {
     Serial.println(APDS.readProximity());
   }*/
   
-  /*
+  
   digitalWrite(LED_LEFT, HIGH);
   digitalWrite(LED_RIGHT, LOW);
+  delay(500);
+
+  digitalWrite(LED_RIGHT, LOW);
+  digitalWrite(LED_LEFT, LOW);
   delay(1000);
 
   digitalWrite(LED_RIGHT, HIGH);
   digitalWrite(LED_LEFT, LOW);
-  delay(1000);
-  */
+  delay(500);
 
+  digitalWrite(LED_RIGHT, LOW);
+  digitalWrite(LED_LEFT, LOW);
+  delay(1000);
+  
+/*
   if(button == PRESSED) {
     Camera.readFrame(data);
     uint8_t rgb888[3];
@@ -130,5 +138,5 @@ void loop() {
 
     Serial.println("</image>");
   }
-  
+  */
 }

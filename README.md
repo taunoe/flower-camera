@@ -2,9 +2,22 @@
 
 Electronic sculpture with machine vision
 
-![PCB](doc/4N8A9532.jpg)
+## Parts
 
-## OV7670 camera
+### USSR electronic doorbell
+
+I have this USSR electronic doorbell. Made on 1987 (or 1981).
+
+![Doorbell](doc/doorbell.png)
+
+### PCB
+
+Custom-made PSB. Manufacturer [PCBWay](https://www.pcbway.com/setinvite.aspx?inviteid=432220).
+
+![PCB](doc/4N8A9532.jpg)
+![Schematic](doc/Schematic_2022_rp2040_ov7670_2022-07-20.png)
+
+### OV7670 camera
 
 p. 163.
 
@@ -19,7 +32,7 @@ OV7670 camera is initialized to output images in the RGB565 color format.
 **NB! Pin layout may be different on different camera modules!**
 ![Camera pins](doc/camera_pins.jpg)
 
-### Metadata
+#### Metadata
 
 Metadata helps to simplify the parsing and check communication errors.
 
@@ -35,7 +48,7 @@ The color components will be sent as strings of digits terminated with a newline
 
 ![Raster scan](doc/raster-scan.jpg)
 
-### RGB565
+#### RGB565
 
 RGB565 packs the pixel values in 2 bytes (16 bits). Used in embedded systems with limited memory since it reduces the image size. It also reduces the dynamic range of the color components.
 
@@ -45,9 +58,9 @@ RGB565 packs the pixel values in 2 bytes (16 bits). Used in embedded systems wit
 
 Need a buffer of 153.6 KB, which is roughly 60% SRAM available on Arduino Nano 33.
 
-### RGB888
+#### RGB888
 
-### YCbCr422
+#### YCbCr422
 
 YCbCr422 is digital color encoding that does not express the pixel color in terms of red (R), green (G) and blue (B) intensities but rather in terms of brightness (Y), blue-difference (Cb), and red-difference (Cr) chroma components.
 
@@ -57,7 +70,7 @@ OV7670 driver returns the Cr component before the Cb one.
 
 The OV7670 driver interchanges YCbCr422 with YUV422, leading to some confusion. The main difference between YUV and YCbCr is that YUV is for analog TV. Therefore, although we pass YUV422 to `Camera.begin()`, we actually initialize the device for YCbCr422.
 
-### Example codes
+#### Example codes
 
 - https://github.com/PacktPublishing/TinyML-Cookbook/blob/main/Chapter05/ArduinoSketches/01_camera_capture.ino
 - https://github.com/PacktPublishing/TinyML-Cookbook/blob/main/Chapter05/ArduinoSketches/02_camera_capture_qvga_rgb565.ino
