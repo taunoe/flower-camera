@@ -1,5 +1,5 @@
 /*************************************************************
- * File: main.h
+ * File: main.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 09.07.2022
  * Tauno Erik 2022
