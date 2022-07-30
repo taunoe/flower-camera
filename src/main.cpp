@@ -10,9 +10,15 @@
 #include <Arduino_OV767X.h>    // Camera
 #include "functions.h"         // image functions
 
+// Pins
+#define BELL_PIN 11    // D11
+#define LED_LEFT  7    // D7
+#define LED_RIGHT A7   // A7
+
 // Camera
 #define PRESSED     0
 #define BUTTON      p30  // A2
+
 
 //static mbed::DigitalIn button(BUTTON);
 
@@ -50,10 +56,6 @@ inline void ycbcr422_to_rgb888(int32_t Y, int32_t Cb, int32_t Cr, uint8_t* out) 
   out[1] = clamp_0_255((int)(Y - ((Cb >> 2) + (Cb >> 4) + (Cb >> 5)) - ((Cr >> 1) + (Cr >> 3) + (Cr >> 4)) + (Cr >> 5)));
   out[2] = clamp_0_255((int)(Y + Cb + (Cb >> 1) + (Cb >> 2) + (Cb >> 6)));
 }
-
-// LEDs
-#define LED_LEFT  7  // 7
-#define LED_RIGHT A7   // A7
 
 void setup() {
   Serial.begin(115600);

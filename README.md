@@ -4,6 +4,25 @@ Electronic sculpture with machine vision
 
 ## Parts
 
+### Arduino Nano BLE Sense
+
+MCU:
+
+- The nRF52840 from Nordic Semiconductors, 32-bit ARM® Cortex®-M4 CPU running at 64 MHz.
+- Operating voltage 3.3V
+- Input voltage 21V (VIN pin)
+- Bluetooth® pairing via NFC and ultra-low power consumption modes. [ArduinoBLE](https://www.arduino.cc/reference/en/libraries/arduinoble/)
+
+On-board sensors:
+
+- 9 axis inertial sensor: [LSM9DS1 datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_lsm9ds1.pdf)
+- humidity, and temperature sensor [HTS221 datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_HTS221.pdf)
+- barometric sensor [LPS22HB datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_lps22hb.pdf)
+- digital microphone [MP34DT05-A datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_mp34dt05-a.pdf)
+- gesture, proximity, light color and light intensity sensor [APDS-9960](https://content.arduino.cc/assets/Nano_BLE_Sense_av02-4191en_ds_apds-9960.pdf)
+
+![Arduino Nano BLE Sense pinout](doc/arduino-nano-33-ble.png)
+
 ### USSR electronic doorbell
 
 I have this USSR electronic doorbell. Made on 1987 (or 1981).
