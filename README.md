@@ -1,6 +1,8 @@
-# Flower Camera
+# The Blue Flower
 
 Electronic sculpture with machine vision
+
+![Circuit Sculpture](doc/IMG_9564.jpg)
 
 ## Parts
 
@@ -40,7 +42,7 @@ Custom-made PSB. Manufacturer [PCBWay](https://www.pcbway.com/setinvite.aspx?inv
 
 p. 163.
 
-Sice microcontrollers have limited memory, it is a good choice because it is capable of transferring low-resolution images.
+Since microcontrollers have limited memory, it is a good choice because it is capable of transferring low-resolution images.
 
 Output is QVGA (320x240) and QQVGA (160x120) pictures. QQQVGA (80x60).
 
