@@ -20,6 +20,7 @@ Tauno_Bell::~Tauno_Bell() {
 
 void Tauno_Bell::begin() {
   pinMode(_pin, OUTPUT);
+  digitalWrite(_pin, LOW);
 }
 
 void Tauno_Bell::on() {
@@ -32,6 +33,7 @@ void Tauno_Bell::off() {
 
 void Tauno_Bell::bell() {
   digitalWrite(_pin, HIGH);
-  // TODO: Timing?
+  delay(1);
   digitalWrite(_pin, LOW);
+
 }

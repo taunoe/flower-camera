@@ -28,7 +28,7 @@ class Tauno_LEDs {
   void right_on();
   void left_off();
   void right_off();
-
+  void test();
 };
 
 #endif  // LIB_TAUNOLEDS_H

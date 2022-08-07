@@ -74,6 +74,15 @@ Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register
 Tauno_LEDs Light(LEFT_LED_PIN, RIGHT_LED_PIN);
 Tauno_Bell Bell(BELL_PIN);
 
+/*
+Test hardware elements one by one
+*/
+void tests() {
+  //Bell.bell();
+  Light.test();
+  Status.test();
+}
+
 void setup() {
   Serial.begin(115600);
 
@@ -104,19 +113,19 @@ void setup() {
     Serial.println("Error initializing APDS9960 sensor!");
   }
   */
+
+ tests();
 }
 
 void loop() {
+  delay(5000);
+  Light.off();
   /*
   if (APDS.proximityAvailable()) {
     Serial.println("Tere");
     Serial.println(APDS.readProximity());
   }*/
 
-  Bell.on();
-  delay(5);
-  Bell.off();
-  
 /*
   if(button == PRESSED) {
     Camera.readFrame(data);

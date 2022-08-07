@@ -2,7 +2,7 @@
  * File: Tauno_Status.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 06.08.2022
- * Tauno Erik 2022
+ * Tauno Erik 2022 
 **************************************************************/
 
 #include "Tauno_Status.h"
@@ -27,3 +27,20 @@ void Tauno_Status::begin() {
   pinMode(_data_pin, OUTPUT);
 }
 
+void Tauno_Status::write(uint8_t byte) {
+  digitalWrite(_latch_pin, LOW);
+  shiftOut(_data_pin, _clock_pin, LSBFIRST, byte);
+  digitalWrite(_latch_pin, HIGH);
+}
+
+// Blink one by one
+void Tauno_Status::test() {
+ uint8_t data = 0b10000000;
+
+ for (uint8_t i = 0; i < 8; i++){
+  write(data);
+  data = data >> 1;
+  delay(500);
+ }
+ write(0);
+}
