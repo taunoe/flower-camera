@@ -2,7 +2,7 @@
  * File: main.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 09.07.2022
- * Edited  06.08.2022
+ * Edited  07.08.2022
  * Tauno Erik 2022
 **************************************************************/
 #include <Arduino.h>
@@ -10,14 +10,20 @@
 #include <Arduino_APDS9960.h>  // Proximity and gesture sensor
 #include <Arduino_OV767X.h>    // Camera
 #include "functions.h"         // image functions
+#include "Tauno_Status.h"      // Shift Register with 7 diffrent colour LEDs
+#include "Tauno_LEDs.h"        // LEDs for the camera, on left and right
+#include "Tauno_Bell.h"        // Doorbell
 
-// Pins
-#define BELL_PIN  11  // D11
-#define LED_LEFT   7  // D7
-#define LED_RIGHT A7  // A7
-#define LATCH_PIN 13  // D13 shift register
-#define CLOCK_PIN A2  // p30 shift register
-#define DATA_PIN  12  // D12 shift register
+// Bell Pin
+#define BELL_PIN      11  // D11
+// LEDs pins
+#define LEFT_LED_PIN   7  // D7
+#define RIGHT_LED_PIN A7  // A7
+// Status Shift Register pins
+#define LATCH_PIN     13  // D13
+#define CLOCK_PIN     A2  // p30
+#define DATA_PIN      12  // D12
+
 
 // Camera
 #define PRESSED     0
@@ -61,23 +67,20 @@ inline void ycbcr422_to_rgb888(int32_t Y, int32_t Cb, int32_t Cr, uint8_t* out) 
   out[2] = clamp_0_255((int)(Y + Cb + (Cb >> 1) + (Cb >> 2) + (Cb >> 6)));
 }
 
-void status (uint8_t code) {
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, code);
-  digitalWrite(LATCH_PIN, HIGH);
-}
+
+/* Init objects */
+
+Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register
+Tauno_LEDs Light(LEFT_LED_PIN, RIGHT_LED_PIN);
+Tauno_Bell Bell(BELL_PIN);
 
 void setup() {
   Serial.begin(115600);
-  //while (!Serial);
 
-/* Setup Pins */
-  pinMode(LED_LEFT, OUTPUT);
-  pinMode(LED_RIGHT, OUTPUT);
-  pinMode(BELL_PIN, OUTPUT);
-  pinMode(LATCH_PIN, OUTPUT);
-  pinMode(CLOCK_PIN, OUTPUT);
-  pinMode(DATA_PIN, OUTPUT);
+  // Setup Pins
+  Bell.begin();
+  Status.begin();
+  Light.begin();
 
 /*
   //if (!Camera.begin(QVGA, RGB565, 1)) {
@@ -110,35 +113,9 @@ void loop() {
     Serial.println(APDS.readProximity());
   }*/
 
-  status(0b00000001);
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DATA_PIN, CLOCK_PIN, MSBFIRST, 0b00000001);
-  digitalWrite(LATCH_PIN, HIGH);
-  
-  status(0b00000010);
-  digitalWrite(LED_LEFT, HIGH);
-  digitalWrite(LED_RIGHT, LOW);
-  delay(500);
-
-  status(0b00000100);
-  digitalWrite(LED_RIGHT, LOW);
-  digitalWrite(LED_LEFT, LOW);
-  delay(1000);
-
-  status(0b00001000);
-  digitalWrite(LED_RIGHT, HIGH);
-  digitalWrite(LED_LEFT, LOW);
-  delay(500);
-
-  status(0b00010000);
-  digitalWrite(LED_RIGHT, LOW);
-  digitalWrite(LED_LEFT, LOW);
-  delay(1000);
-
-  status(0b00100000);
-  digitalWrite(BELL_PIN, HIGH);
+  Bell.on();
   delay(5);
-  digitalWrite(BELL_PIN, LOW);
+  Bell.off();
   
 /*
   if(button == PRESSED) {
