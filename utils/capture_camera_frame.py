@@ -5,7 +5,7 @@ import sys
 import uuid
 from PIL import Image  # pip install Pillow
 
-port = '/dev/ttyACM1' # /dev/ttyACM0
+port = '/dev/ttyACM0' # /dev/ttyACM0
 baudrate = 115600
 
 # Initialize serial port

@@ -2,7 +2,7 @@
  * File: main.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 09.07.2022
- * Edited  07.08.2022
+ * Edited  08.08.2022
  * Tauno Erik 2022
 **************************************************************/
 #include <Arduino.h>
@@ -27,8 +27,7 @@
 
 // Camera
 #define PRESSED     0
-#define BUTTON      p30  // A2
-
+//#define BUTTON      p30  // A2
 
 //static mbed::DigitalIn button(BUTTON);
 
@@ -45,10 +44,10 @@ inline T clamp_0_255(T x) {
 
 inline void convert_yuv422_rgb888_f(uint8_t* out, uint8_t* in) {
   // Note: U and V are swapped
-	const int32_t Y0 = in[0];
-	const int32_t V  = in[1];
-	const int32_t Y1 = in[2];
-	const int32_t U  = in[3];
+  const int32_t Y0 = in[0];
+  const int32_t V  = in[1];
+  const int32_t Y1 = in[2];
+  const int32_t U  = in[3];
 
   out[0] = clamp_0_255(Y0 + 1.402f * (V - 128.0f));
   out[1] = clamp_0_255(Y0 - 0.344f * (U - 128.0f) - (0.714f * (V - 128.0f)));
@@ -83,6 +82,7 @@ void tests() {
   Status.test();
 }
 
+
 void setup() {
   Serial.begin(115600);
 
@@ -91,7 +91,7 @@ void setup() {
   Status.begin();
   Light.begin();
 
-/*
+
   //if (!Camera.begin(QVGA, RGB565, 1)) {
   if (!Camera.begin(QQVGA, YUV422, 1)) {
     Serial.println("Failed to initialize camera!");
@@ -100,11 +100,11 @@ void setup() {
     Serial.println("OV7670 Camera initialized!");
   }
 
-  button.mode(PullUp);
+  //button.mode(PullUp);
 
   bytes_per_pixel = Camera.bytesPerPixel();
   bytes_per_frame = Camera.width() * Camera.height() * bytes_per_pixel;
-*/
+
   //Camera.testPattern();  // The Camera module will always return a 
                          // fixed test pattern image with color bands 
 
@@ -115,19 +115,24 @@ void setup() {
   */
 
  tests();
+
+ //Light.on();
 }
 
 void loop() {
   delay(5000);
-  Light.off();
+  //Light.off();
   /*
   if (APDS.proximityAvailable()) {
     Serial.println("Tere");
     Serial.println(APDS.readProximity());
   }*/
 
-/*
-  if(button == PRESSED) {
+
+//  if(button == PRESSED) {
+  if(1) {
+    Status.off(GREEN);
+    Status.on(RED);
     Camera.readFrame(data);
     uint8_t rgb888[3];
 
@@ -154,6 +159,8 @@ void loop() {
     }
 
     Serial.println("</image>");
+    Status.on(GREEN);
+    Status.off(RED);
   }
-  */
+
 }

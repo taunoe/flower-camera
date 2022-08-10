@@ -53,10 +53,10 @@ void Tauno_LEDs::right_off() {
 void Tauno_LEDs::test() {
   left_on();
   delay(500);
-  left_off;
+  left_off();
   right_on();
   delay(500);
-  right_off;
+  right_off();
   delay(500);
   on();
   delay(500);

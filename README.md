@@ -97,6 +97,10 @@ The OV7670 driver interchanges YCbCr422 with YUV422, leading to some confusion. 
 - https://github.com/PacktPublishing/TinyML-Cookbook/blob/main/Chapter05/ArduinoSketches/02_camera_capture_qvga_rgb565.ino
 - https://github.com/PacktPublishing/TinyML-Cookbook/blob/main/Chapter05/ArduinoSketches/03_camera_capture_qqvga_ycbcr422.ino
 
+## ML
+
+- [List of pre-trained models offered by Keras](https://keras.io/api/applications/)
+
 ## Books
 
 - [TinyML Cookbook: Combine artificial intelligence and ultra-low-power embedded devices to make the world smarter](https://www.packtpub.com/product/tinyml-cookbook/9781801814973), Gian Marco Iodice, 2022, Packt, ISBN9781801814973 
