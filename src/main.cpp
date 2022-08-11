@@ -132,10 +132,13 @@ void loop() {
 //  if(button == PRESSED) {
   if(1) {
     Status.off(GREEN);
+
     Status.on(RED);
     Camera.readFrame(data);
     uint8_t rgb888[3];
+    Status.off(RED);
 
+    Status.on(ORANGE);
     Serial.println("<image>");
     Serial.println(Camera.width());
     Serial.println(Camera.height());
@@ -159,8 +162,9 @@ void loop() {
     }
 
     Serial.println("</image>");
+    Status.off(ORANGE);
+    
     Status.on(GREEN);
-    Status.off(RED);
   }
 
 }

@@ -1,12 +1,14 @@
 # Original code:
 # https://github.com/PacktPublishing/TinyML-Cookbook/blob/main/Chapter05/PythonScripts/04_build_dataset.py
 import numpy as np
-import serial
+import serial          # pip install pyserial
 import sys
 import uuid            # unique filenames
 from PIL import Image
 
-port = '/dev/ttyACM0'
+port = '/dev/ttyACM0'  # Linux
+#port = 'COM5'         # Windows
+
 baudrate = 115600
 
 # Initialize serial port

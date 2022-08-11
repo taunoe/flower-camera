@@ -100,6 +100,7 @@ The OV7670 driver interchanges YCbCr422 with YUV422, leading to some confusion. 
 ## ML
 
 - [List of pre-trained models offered by Keras](https://keras.io/api/applications/)
+- [List of MobileNet v2 Keras models](https://github.com/keras-team/keras-applications/blob/master/keras_applications/mobilenet_v2.py)
 
 ## Books
 
