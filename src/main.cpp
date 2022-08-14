@@ -134,8 +134,10 @@ void loop() {
     Status.off(GREEN);
 
     Status.on(RED);
+    Light.on();
     Camera.readFrame(data);
     uint8_t rgb888[3];
+    Light.off();
     Status.off(RED);
 
     Status.on(ORANGE);
@@ -163,7 +165,7 @@ void loop() {
 
     Serial.println("</image>");
     Status.off(ORANGE);
-    
+
     Status.on(GREEN);
   }
 
