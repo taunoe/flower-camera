@@ -21,7 +21,7 @@ On-board sensors:
 - humidity, and temperature sensor [HTS221 datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_HTS221.pdf)
 - barometric sensor [LPS22HB datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_lps22hb.pdf)
 - digital microphone [MP34DT05-A datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_mp34dt05-a.pdf)
-- gesture, proximity, light color and light intensity sensor [APDS-9960](https://content.arduino.cc/assets/Nano_BLE_Sense_av02-4191en_ds_apds-9960.pdf)
+- gesture, proximity, light color and light intensity sensor [APDS-9960 datasheet](https://content.arduino.cc/assets/Nano_BLE_Sense_av02-4191en_ds_apds-9960.pdf), [Library](https://github.com/arduino-libraries/Arduino_APDS9960)
 
 ![Arduino Nano BLE Sense pinout](doc/arduino-nano-33-ble.png)
 
