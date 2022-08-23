@@ -23,7 +23,7 @@
 
 // 0 run ML MODEL
 // 1 Take images and send them to computer over serial. (Py script to same them).
-#define BUILD_DATASET 0
+#define BUILD_DATASET 1
 
 
 #if BUILD_DATASET == 1
