@@ -346,7 +346,8 @@ public:
     {
         // transpose the matrix so we have one row per axis
         EI_TRY(numpy::transpose(input_matrix));
-
+        
+        // func tests for scale of 1 and does a no op in that case
         EI_TRY(numpy::scale(input_matrix, config->scale_axes));
 
         bool do_filter = false;
