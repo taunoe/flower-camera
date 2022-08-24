@@ -53,12 +53,12 @@ int R = 0;
 int G = 0;
 int B = 0;
 int Ambient = 0;
-const int LIGHT_THRESHOLD = 1800;  // if Ambient is < lights on
+const int LIGHT_THRESHOLD = 1700;  // if Ambient is < lights on
 
 /* ML model*/
-#define MOBILE_THRESHOLD 0.65
+#define MOBILE_THRESHOLD 0.6
 #define HUMAN_THRESHOLD 0.5
-#define INFERENCE_DELAY 500
+#define INFERENCE_DELAY 1000
 
 /* Init objects */
 Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register

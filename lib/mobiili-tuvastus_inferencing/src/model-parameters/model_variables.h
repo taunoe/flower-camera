@@ -28,9 +28,9 @@
 
 const char* ei_classifier_inferencing_categories[] = { "inimene", "mobiil", "muu" };
 
-uint8_t ei_dsp_config_13_axes[] = { 0 };
-const uint32_t ei_dsp_config_13_axes_size = 1;
-ei_dsp_config_image_t ei_dsp_config_13 = {
+uint8_t ei_dsp_config_16_axes[] = { 0 };
+const uint32_t ei_dsp_config_16_axes_size = 1;
+ei_dsp_config_image_t ei_dsp_config_16 = {
     1,
     1,
     "RGB"
