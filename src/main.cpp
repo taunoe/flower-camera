@@ -2,7 +2,7 @@
  * File: main.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 09.07.2022
- * Edited  21.08.2022
+ * Edited  24.08.2022
  * Tauno Erik 2022
  * 
  * Status Colours
@@ -23,7 +23,7 @@
 
 // 0 run ML MODEL
 // 1 Take images and send them to computer over serial. (Py script to same them).
-#define BUILD_DATASET 1
+#define BUILD_DATASET 0
 
 
 #if BUILD_DATASET == 1
@@ -53,11 +53,12 @@ int R = 0;
 int G = 0;
 int B = 0;
 int Ambient = 0;
-const int LIGHT_THRESHOLD = 2000;  // if Ambient is < lights on
+const int LIGHT_THRESHOLD = 1800;  // if Ambient is < lights on
 
 /* ML model*/
-#define MOBILE_THRESHOLD 0.7
-#define HUMAN_THRESHOLD 0.65
+#define MOBILE_THRESHOLD 0.65
+#define HUMAN_THRESHOLD 0.5
+#define INFERENCE_DELAY 500
 
 /* Init objects */
 Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register
@@ -188,7 +189,7 @@ void loop() {
 
     ei_printf("\nStarting inferencing in 2 seconds...\n");
     // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
-    if (ei_sleep(2000) != EI_IMPULSE_OK) {
+    if (ei_sleep(INFERENCE_DELAY) != EI_IMPULSE_OK) {
       break;
     }
 
