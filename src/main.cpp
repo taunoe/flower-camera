@@ -2,7 +2,7 @@
  * File: main.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 09.07.2022
- * Edited  24.08.2022
+ * Edited  27.08.2022
  * Tauno Erik 2022
  * 
  * Status Colours
@@ -57,8 +57,7 @@ const int LIGHT_THRESHOLD = 1700;  // if Ambient is < lights on
 
 /* ML model*/
 #define MOBILE_THRESHOLD 0.6
-#define HUMAN_THRESHOLD 0.5
-#define INFERENCE_DELAY 1000
+#define INFERENCE_DELAY 800
 
 /* Init objects */
 Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register
@@ -175,6 +174,7 @@ void loop() {
       Serial.print(proximity);
     }
     // Check if a color reading is available
+    /*
     if (APDS.colorAvailable()) {
       APDS.readColor(R, G, B, Ambient);
       Serial.print(" RGB=");
@@ -186,6 +186,7 @@ void loop() {
       Serial.print("A=");
       Serial.println(Ambient);
     }
+    */
 
     ei_printf("\nStarting inferencing in 2 seconds...\n");
     // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
@@ -274,11 +275,8 @@ void loop() {
                                   result.classification[ix].value);
     }
 
-    if (result.classification[0].value > HUMAN_THRESHOLD ) {
-      Status.on(BLUE);  // Human tetected
-    }
 
-    if (result.classification[1].value > MOBILE_THRESHOLD ) {
+    if (result.classification[0].value > MOBILE_THRESHOLD ) {
       if (!Is_bell_on) {
         Is_bell_on = true;
         Bell_on_time = millis();

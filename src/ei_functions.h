@@ -18,6 +18,21 @@
 
 #define DWORD_ALIGN_PTR(a)   ((a & 0x3) ?(((uintptr_t)a + 0x4) & ~(uintptr_t)0x3) : a)
 
+/*
+ ** NOTE: If you run into TFLite arena allocation issue.
+ **
+ ** This may be due to may dynamic memory fragmentation.
+ ** Try defining "-DEI_CLASSIFIER_ALLOCATION_STATIC" in boards.local.txt (create
+ ** if it doesn't exist) and copy this file to
+ ** `<ARDUINO_CORE_INSTALL_PATH>/arduino/hardware/<mbed_core>/<core_version>/`.
+ **
+ ** See
+ ** (https://support.arduino.cc/hc/en-us/articles/360012076960-Where-are-the-installed-cores-located-)
+ ** to find where Arduino installs cores on your machine.
+ **
+ ** If the problem persists then there's not enough memory for this model and application.
+ */
+
 class OV7675 : public OV767X {
   public:
     int begin(int resolution, int format, int fps);
