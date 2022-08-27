@@ -26,11 +26,11 @@
 #include "model_metadata.h"
 #include "edge-impulse-sdk/classifier/ei_model_types.h"
 
-const char* ei_classifier_inferencing_categories[] = { "inimene", "mobiil", "muu" };
+const char* ei_classifier_inferencing_categories[] = { "mobiil", "muu" };
 
-uint8_t ei_dsp_config_16_axes[] = { 0 };
-const uint32_t ei_dsp_config_16_axes_size = 1;
-ei_dsp_config_image_t ei_dsp_config_16 = {
+uint8_t ei_dsp_config_19_axes[] = { 0 };
+const uint32_t ei_dsp_config_19_axes_size = 1;
+ei_dsp_config_image_t ei_dsp_config_19 = {
     1,
     1,
     "RGB"
