@@ -2,7 +2,7 @@
  * File: main.cpp
  * Documentation: https://github.com/taunoe/flower-camera
  * Started 09.07.2022
- * Edited  27.08.2022
+ * Edited  28.08.2022
  * Tauno Erik 2022
  * 
  * Status Colours
@@ -20,6 +20,7 @@
 #include "Tauno_Status.h"          // Shift Register with 7 diffrent colour LEDs
 #include "Tauno_LEDs.h"            // LEDs for the camera, on left and right
 #include "Tauno_Bell.h"            // Doorbell
+#include <Scheduler.h>             // Scheduler since we want to manage multiple tasks.
 
 // 0 run ML MODEL
 // 1 Take images and send them to computer over serial. (Py script to same them).
@@ -42,8 +43,18 @@
 #define CLOCK_PIN     A2  // p30 Status Shift Register 
 #define DATA_PIN      12  // D12 Status Shift Register
 
+/* LEDs:
+   DARK_RED, RED, ORANGE, YELLOW, GREEN, DARK_GREEN, BLUE
+*/
+#define SYTEM_LED   GREEN
+#define CAMERA_LED  RED
+#define BELL_LED    DARK_RED
+#define MOBILE_LED  YELLOW
+#define HUMAN_LED   BLUE
+#define DATA_LED    ORANGE
+
 /* Bell */
-const int BELL_DURATION = 9000; // 9 seconds
+const int BELL_DURATION = 8000;  // 8 seconds
 uint32_t Bell_on_time = 0;
 bool Is_bell_on = false;
 
@@ -56,8 +67,9 @@ int Ambient = 0;
 const int LIGHT_THRESHOLD = 1700;  // if Ambient is < lights on
 
 /* ML model*/
-#define MOBILE_THRESHOLD 0.6
-#define INFERENCE_DELAY 800
+#define MOB_GAT_ID       1
+#define MOBILE_THRESHOLD 0.65
+#define INFERENCE_DELAY  1000
 
 /* Init objects */
 Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register
@@ -74,58 +86,23 @@ void tests() {
 }
 
 
-void setup() {
-  Serial.begin(115600);
-
-  // Setup Pins
-  Bell.begin();
-  Status.begin();
-  Light.begin();
-
-  if (!APDS.begin()) {
-    Serial.println("Error initializing APDS-9960 sensor.");
-  }
-
-#if BUILD_DATASET == 1
-  if (!Camera.begin(QQVGA, YUV422, 1)) {
-    Serial.println("Failed to initialize camera!");
-    while (1);
-  } else {
-    Serial.println("OV7670 Camera initialized!");
-  }
-
-
-  bytes_per_pixel = Camera.bytesPerPixel();
-  bytes_per_frame = Camera.width() * Camera.height() * bytes_per_pixel;
-
-  //Camera.testPattern();  // fixed test pattern image with color bands
-#else
-  // summary of inferencing settings (from model_metadata.h)
-  ei_printf("Inferencing settings:\n");
-  ei_printf("\tImage resolution: %dx%d\n", EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT);
-  ei_printf("\tFrame size: %d\n", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
-  ei_printf("\tNo. of classes: %d\n", sizeof(ei_classifier_inferencing_categories) / sizeof(ei_classifier_inferencing_categories[0]));
-#endif
-
- tests();  // Test hardware elements
-}
-
-
+/****************************************************************
+ loop: 0, CAMERA thread
+ ****************************************************************/
 void loop() {
   bool stop_inferencing = false;
   uint32_t time_now = millis();
 
 #if BUILD_DATASET == 1
-    Status.off(GREEN);
 
-    Status.on(RED);
+    Status.on(CAMERA_LED);
     Light.on();
     Camera.readFrame(data);
     uint8_t rgb888[3];
     Light.off();
-    Status.off(RED);
+    Status.off(CAMERA_LED);
 
-    Status.on(ORANGE);
+    Status.on(DATA_LED);
     Serial.println("<image>");
     Serial.println(Camera.width());
     Serial.println(Camera.height());
@@ -149,9 +126,7 @@ void loop() {
     }
 
     Serial.println("</image>");
-    Status.off(ORANGE);
-
-    Status.on(GREEN);
+    Status.off(DATA_LED);
 
 #else
 
@@ -162,47 +137,21 @@ void loop() {
     if (Is_bell_on) {
       if ( (time_now - Bell_on_time) >= BELL_DURATION) {
         Is_bell_on = false;
-        Status.off(DARK_RED);
-        Serial.println("Bell OFF");
+        Status.off(BELL_LED);
+        //Serial.println("Bell OFF");
       }
     }
 
-    // Check if a proximity reading is available.
-    if (APDS.proximityAvailable()) {
-      proximity = APDS.readProximity();
-      Serial.print("PR=");
-      Serial.print(proximity);
-    }
-    // Check if a color reading is available
-    /*
-    if (APDS.colorAvailable()) {
-      APDS.readColor(R, G, B, Ambient);
-      Serial.print(" RGB=");
-      Serial.print(R);
-      Serial.print(",");
-      Serial.print(G);
-      Serial.print(",");
-      Serial.println(B);
-      Serial.print("A=");
-      Serial.println(Ambient);
-    }
-    */
-
-    ei_printf("\nStarting inferencing in 2 seconds...\n");
+    ei_printf("\nStarting inferencing...\n");
     // instead of wait_ms, we'll wait on the signal, this allows threads to cancel us...
     if (ei_sleep(INFERENCE_DELAY) != EI_IMPULSE_OK) {
       break;
     }
 
     ei_printf("Taking photo...\n");
-    Status.off(YELLOW);    // Mobile detected
-    Status.off(BLUE);      // Human detected
-    Status.off(DARK_GREEN); // Camera not active
-    Status.on(RED);        // Camera active
-
-    if (Ambient < LIGHT_THRESHOLD) {
-      Light.on();
-    }
+    Status.off(MOBILE_LED);     // Mobile detected
+    Status.off(HUMAN_LED);      // Human detected
+    Status.on(CAMERA_LED);      // Camera active
 
     if (ei_camera_init() == false) {
       ei_printf("ERR: Failed to initialize image sensor\r\n");
@@ -238,9 +187,7 @@ void loop() {
     signal.total_length = EI_CLASSIFIER_INPUT_WIDTH * EI_CLASSIFIER_INPUT_HEIGHT;
     signal.get_data = &ei_camera_cutout_get_data;
 
-    Light.off();
-    Status.off(RED);        // Camera active
-    Status.on(DARK_GREEN);  // Camera not active
+    Status.off(CAMERA_LED);     // Camera active
 
     // run the impulse: DSP, neural network and the Anomaly algorithm
     ei_impulse_result_t result = { 0 };
@@ -276,13 +223,13 @@ void loop() {
     }
 
 
-    if (result.classification[0].value > MOBILE_THRESHOLD ) {
+    if (result.classification[MOB_GAT_ID].value > MOBILE_THRESHOLD ) {
       if (!Is_bell_on) {
         Is_bell_on = true;
         Bell_on_time = millis();
         Bell.bell();
-        Status.on(YELLOW);    // Mobile detected
-        Status.on(DARK_RED);  // Bell on
+        Status.on(MOBILE_LED);     // Mobile detected
+        Status.on(BELL_LED);       // Bell on
         Serial.println("Bell ON");
       }
     }
@@ -305,6 +252,90 @@ void loop() {
 
 #endif // Build dataset
 
+yield();
+}  // Loop 0 end
+
+/****************************************************************
+ loop: , sensors thread
+ ****************************************************************/
+
+void loop1() {
+  // Check if a proximity reading is available.
+  if (APDS.proximityAvailable()) {
+    proximity = APDS.readProximity();
+    Serial.print("PR=");
+    Serial.print(proximity);
+  }
+
+  // Kui vaataja on lähedal
+  if (proximity < 250) {
+    Light.on();
+  } else {
+    Light.off();
+  }
+
+  // Check if a color reading is available
+  if (APDS.colorAvailable()) {
+      APDS.readColor(R, G, B, Ambient);
+      Serial.print(" RGB=");
+      Serial.print(R);
+      Serial.print(",");
+      Serial.print(G);
+      Serial.print(",");
+      Serial.println(B);
+      Serial.print("A=");
+      Serial.println(Ambient);
+  }
+
+  // kui RGB = 0,0,0 tuled off
+    // Kui ambient 10-thres tuled on
+    // TODO:
+    // Pimedas ei ole tegelikult üldse mõtet pildistada!?
+    if (Ambient > 10 && Ambient < LIGHT_THRESHOLD) {
+      //Light.on();
+    }
+
+  yield();
+}  // Loop 1 end
+
+/************************************************************/
+void setup() {
+  Serial.begin(115600);
+
+  // Setup Pins
+  Bell.begin();
+  Status.begin();
+  Light.begin();
+
+  if (!APDS.begin()) {
+    Serial.println("Error initializing APDS-9960 sensor.");
+  }
+
+#if BUILD_DATASET == 1
+  if (!Camera.begin(QQVGA, YUV422, 1)) {
+    Serial.println("Failed to initialize camera!");
+    while (1);
+  } else {
+    Serial.println("OV7670 Camera initialized!");
+  }
 
 
-}  // Loop end
+  bytes_per_pixel = Camera.bytesPerPixel();
+  bytes_per_frame = Camera.width() * Camera.height() * bytes_per_pixel;
+
+  //Camera.testPattern();  // fixed test pattern image with color bands
+#else
+  // summary of inferencing settings (from model_metadata.h)
+  ei_printf("Inferencing settings:\n");
+  ei_printf("\tImage resolution: %dx%d\n", EI_CLASSIFIER_INPUT_WIDTH, EI_CLASSIFIER_INPUT_HEIGHT);
+  ei_printf("\tFrame size: %d\n", EI_CLASSIFIER_DSP_INPUT_FRAME_SIZE);
+  ei_printf("\tNo. of classes: %d\n", sizeof(ei_classifier_inferencing_categories) / sizeof(ei_classifier_inferencing_categories[0]));
+#endif
+
+  // Add "loop" to scheduling.
+  // "loop" is always started by default.
+  Scheduler.startLoop(loop1);
+
+ tests();             // Test hardware elements
+ Status.on(SYTEM_LED);
+} // setup end
