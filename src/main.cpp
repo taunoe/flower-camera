@@ -54,22 +54,30 @@
 #define DATA_LED    ORANGE
 
 /* Bell */
-const int BELL_DURATION = 8000;  // 8 seconds
+const int BELL_DURATION = 8000;       // 8 seconds
 uint32_t Bell_on_time = 0;
 bool Is_bell_on = false;
 
+/* Data print */
+const int DATA_PRINT_INTERVAl = 2000;  // 2seconds
+uint32_t Prev_data_print = 0;
+bool Is_data_print = false;
+
 /* APDS9960 */
+#define PROXIMITY_LIGHT_ON 249  // Lähedal 0-254 kaugel
+#define DARK_THRESHOLD 15  // Ambient light
 int proximity = 0;
 int R = 0;
 int G = 0;
 int B = 0;
 int Ambient = 0;
-const int LIGHT_THRESHOLD = 1700;  // if Ambient is < lights on
+bool Is_very_dark = false;
 
 /* ML model*/
 #define MOB_GAT_ID       1
 #define MOBILE_THRESHOLD 0.65
-#define INFERENCE_DELAY  1000
+#define INFERENCE_DELAY  500
+bool Is_run_inferencing = true;   // ML model
 
 /* Init objects */
 Tauno_Status Status(LATCH_PIN, CLOCK_PIN, DATA_PIN);  // Shift Register
@@ -90,7 +98,7 @@ void tests() {
  loop: 0, CAMERA thread
  ****************************************************************/
 void loop() {
-  bool stop_inferencing = false;
+  //bool stop_inferencing = false;
   uint32_t time_now = millis();
 
 #if BUILD_DATASET == 1
@@ -130,7 +138,7 @@ void loop() {
 
 #else
 
-  while(stop_inferencing == false) {
+  while(Is_run_inferencing) {
     time_now = millis();
     
     // Set Is_bell_on to false after BELL_DURATION
@@ -242,7 +250,7 @@ void loop() {
     while (ei_get_serial_available() > 0) {
       if (ei_get_serial_byte() == 'b') {
         ei_printf("Inferencing stopped by user\r\n");
-        stop_inferencing = true; 
+        Is_run_inferencing = false; 
       }
     }
     */
@@ -255,20 +263,27 @@ void loop() {
 yield();
 }  // Loop 0 end
 
+
 /****************************************************************
- loop: , sensors thread
+ loop1: sensors thread
  ****************************************************************/
 
 void loop1() {
+  uint32_t time_now = millis();
+
+  /* Print Data */
+  if ( (time_now - Prev_data_print) >= DATA_PRINT_INTERVAl) {
+    Prev_data_print = time_now;
+    Is_data_print = true;
+  }
+
   // Check if a proximity reading is available.
   if (APDS.proximityAvailable()) {
     proximity = APDS.readProximity();
-    Serial.print("PR=");
-    Serial.print(proximity);
   }
 
   // Kui vaataja on lähedal
-  if (proximity < 250) {
+  if (proximity < PROXIMITY_LIGHT_ON) {
     Light.on();
   } else {
     Light.off();
@@ -276,24 +291,37 @@ void loop1() {
 
   // Check if a color reading is available
   if (APDS.colorAvailable()) {
-      APDS.readColor(R, G, B, Ambient);
-      Serial.print(" RGB=");
-      Serial.print(R);
-      Serial.print(",");
-      Serial.print(G);
-      Serial.print(",");
-      Serial.println(B);
-      Serial.print("A=");
-      Serial.println(Ambient);
+    APDS.readColor(R, G, B, Ambient);
   }
 
-  // kui RGB = 0,0,0 tuled off
-    // Kui ambient 10-thres tuled on
-    // TODO:
-    // Pimedas ei ole tegelikult üldse mõtet pildistada!?
-    if (Ambient > 10 && Ambient < LIGHT_THRESHOLD) {
-      //Light.on();
-    }
+  if (Ambient < DARK_THRESHOLD) {
+    Is_very_dark = true;
+  } else {
+    Is_very_dark = false;
+  }
+
+  if (Is_data_print) {
+    Is_data_print = false;
+    Serial.print("PR=");
+    Serial.println(proximity);
+
+    Serial.print("RGB=");
+    Serial.print(R);
+    Serial.print(",");
+    Serial.print(G);
+    Serial.print(",");
+    Serial.println(B);
+
+    Serial.print("A=");
+    Serial.println(Ambient);
+  }
+
+  /* Kui on pime lülitame kaamera välja */
+  if (Is_very_dark) {
+    Is_run_inferencing = false;
+  } else {
+    Is_run_inferencing = true;
+  }
 
   yield();
 }  // Loop 1 end
